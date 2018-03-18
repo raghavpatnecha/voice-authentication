@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 11, 2018 at 12:46 PM
+-- Generation Time: Mar 18, 2018 at 05:59 PM
 -- Server version: 5.6.16
 -- PHP Version: 5.5.11
 
@@ -30,16 +30,9 @@ CREATE TABLE IF NOT EXISTS `voice` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
   `profileid` varchar(200) DEFAULT NULL,
-  `audi` varchar(200) DEFAULT NULL,
+  `audi` longblob,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=30 ;
-
---
--- Dumping data for table `voice`
---
-
-INSERT INTO `voice` (`id`, `name`, `profileid`, `audi`) VALUES
-(29, 'Raghav Patnecha', 'fa535c04-8134-48f2-82ed-2e9da6b01f67', 'blob:http://localhost/e2a793e1-c174-4a6b-90d1-ba4cc8a905db');
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
