@@ -10,3 +10,5 @@
       2.2.  Go to  `bingapi/index.js` and copy/paste the bingTTS api key on line 1 , line 67 and line 90.
      
 3. Create Database and Import the sql database.   
+
+<img scr="https://github.com/raghavpatnecha/voice-authentication/blob/master/voice.gif" />
