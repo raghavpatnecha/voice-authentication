@@ -11,4 +11,5 @@
      
 3. Create Database and Import the sql database.   
 
-<img scr="https://github.com/raghavpatnecha/voice-authentication/blob/master/voice.gif" />
+
+<img src="https://github.com/raghavpatnecha/voice-authentication/blob/master/voice.gif">
