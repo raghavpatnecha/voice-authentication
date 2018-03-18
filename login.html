@@ -1,0 +1,246 @@
+<html>
+<head>
+		<meta charset="utf-8">
+   		
+    	<title>Voice Sign in </title>
+		<script src="https://use.fontawesome.com/fbf13eceb7.js"></script>
+    	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="styles/style.css" >
+		<style>
+		pre#log{
+       height:500px;
+       overflow:auto;
+       font-size:1.2em;
+	   position:absolute;
+	   margin-left: 15%;
+    margin-top: 18%;
+   }
+   
+   .log{
+	   font-family: calibre;
+    font-size: 1rem;
+    line-height: 1.25em;
+    font-weight: 400;
+    letter-spacing: .015em;
+    text-transform: none;
+	font-weight: bold;
+    font-variant: all-petite-caps;
+   }
+   
+   button:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+#createBtn{
+float: right;
+    width: 122px;
+    margin-right: 84px;
+}
+
+#speakBtn{
+width: 122px;
+}
+
+
+#ret{
+ background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+	position: absolute;
+    top: 8%;
+    right: 37%;
+
+}
+		</style>
+    </head>
+    <body>
+<?php
+$con=mysqli_connect("localhost","root","","autofetch");
+// Check connection
+if (mysqli_connect_errno())
+{
+echo "Failed to connect to MySQL: " . mysqli_connect_error();
+}
+
+$result = mysqli_query($con,"SELECT * FROM voice");
+
+$rows = array();
+while($r = mysqli_fetch_assoc($result)) {
+    $rows[] = $r;
+}
+//print json_encode($rows);
+
+
+mysqli_close($con);
+?>    
+<div class="form">
+  <form action="/" method="POST"> 
+    <div class="back"> <span><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></span></div>
+    <h3>Voice Login</h3>
+    <div class="inputs"> 
+      <div class="email">
+	   <p>Lets check your math</p>
+        <p id="question"></p><input id="ans" type="text">
+		<button id="speakBtn">Listen</button>
+
+   <button id="createBtn" >Voice Input</button>	
+   <button type="reset" value="reset" id="ret"> <i class="fa fa-refresh" aria-hidden="true"></i></button>
+        <button class="next" id="ok"  disabled>Next</button>
+      </div>
+      <div class="password">
+          <p>Click on Record and Say your Anything</p>
+       
+		<button class="login">Login</button>
+      </div>
+    </div>
+	<pre id="log"></pre>
+  </form>
+</div>
+<p class="warning"></p>	
+<div id="message" class="warning">Please verify.</div>
+			<div id="success" class="goon">Validation complete :)</div>
+			<div id="fail" class="warning">Validation failed :(</div>	
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.js"></script>
+<script src="js/login1.js" type="text/javascript"></script>
+<script src="js/speaker-recognition-api-demo-core.js"></script>
+<script src="js/recorder.js"></script>
+<script>
+var recorder;
+var audio_context;
+function onMediaSuccess(stream, callback, secondsOfAudio) {
+    audio_context = audio_context || new window.AudioContext;
+    var input = audio_context.createMediaStreamSource(stream);
+    recorder = new Recorder(input);
+    recorder.record();
+    
+	setTimeout(() => { StopListening(callback); }, secondsOfAudio*1000);
+}
+function StopListening(callback){
+	console.log('...working...');
+    recorder && recorder.stop();
+    recorder.exportWAV(function(blob) {
+        callback(blob);
+    });
+    recorder.clear();
+}
+</script>
+
+
+ <script src="bingapi/master/BingSpeech.js"></script>
+    <script src="bingapi/index.js"></script>    
+<script>
+var book = <?php echo json_encode($rows) ?>;
+//console.log(book);
+function identifyProfile1(blob){
+	//addAudioPlayer(blob);
+
+	
+var Ids = book.map(x => x.profileid).join();
+//console.log(Ids);
+	
+	const identify = 'https://westus.api.cognitive.microsoft.com/spid/v1.0/identify?identificationProfileIds=' + Ids + '&shortAudio=true';
+   
+	var request = new XMLHttpRequest();
+	request.open("POST", identify, true);
+	
+	request.setRequestHeader('Content-Type','application/json');
+	request.setRequestHeader('Ocp-Apim-Subscription-Key', key);
+  
+	request.onload = function () {
+		console.log('identifying profile');
+		//console.log(request.responseText);
+		var location = request.getResponseHeader('Operation-Location');
+		//console.log(location);
+
+		if (location!=null) {
+			pollForIdentification1(location);
+		} else {
+			console.log('Ugh. Something went wrong.');
+		}
+	};
+  
+	request.send(blob);
+}
+
+function pollForIdentification1(location){
+	var success = false;
+	var enrolledInterval;
+
+	enrolledInterval = setInterval(function()
+	{
+		var request = new XMLHttpRequest();
+		request.open("GET", location, true);
+
+		request.setRequestHeader('Content-Type','multipart/form-data');
+		request.setRequestHeader('Ocp-Apim-Subscription-Key', key);
+
+		request.onload = function()
+		{
+			console.log('getting status');
+		
+
+			var json = JSON.parse(request.responseText);
+			//console.log(json);
+			if (json.status == 'succeeded')
+			{
+				clearInterval(enrolledInterval);
+				var speaker = book.filter(function(p){return p.profileid == json.processingResult.identifiedProfileId});
+				 //console.log(speaker);
+				if (speaker != null && speaker.length > 0){
+					//console.log('I think ' + speaker[0].name + ' was talking');
+					
+					$('.loader').fadeOut(500, function() {
+                    $(this).remove();
+					 });
+		        myFun(speaker[0].name);
+				} else {
+					console.log('We think you didn\'t  registered yet.');
+					$('.loader').fadeOut(500, function() {
+                    $(this).remove();
+
+            });
+			
+	
+				}
+			}
+			else 
+			{			
+				console.log('still thinking..');
+				
+			}
+		};
+
+		request.send();
+	}, 2000);
+}
+
+function myFun(name) {
+					$.ajax({
+     url: 'ho.html', //This is the current doc
+     type: "POST",
+
+     data: 'name=' + name,
+     success: function(data){
+	     // alert("You will now be redirected.");
+         window.location.href = 'ho.html?' + name
+     }
+}); 
+
+
+
+}
+</script>
+
+	</body>
+	</html>

@@ -1,0 +1,48 @@
+<html>
+<head>
+<link rel='stylesheet'  href='styles/main.css' type='text/css' media='all' />
+</head>
+<body>
+<main role="main">
+
+<article id="post-65" class="post-65 page type-page status-publish hentry">
+
+	
+<section id="section-0" class="section-container">
+
+		<div class="module-col_50_50 grid-12">
+
+		<div class="grid-6 second-col">
+	<?php
+error_reporting(E_ALL & ~E_NOTICE);
+ $_POST['name']; 
+echo $_POST['name'];
+//echo $_SERVER['QUERY_STRING'];
+$url = $_SERVER['QUERY_STRING'];
+$myText = (string)$url;
+$yo = urldecode($myText);
+echo '<h2>Hi ' . $yo . '</h2>';
+
+
+
+?>
+	<div class="grid-12 box-shadow-left rounded-borders text-color-white" style="background:url(http://pluspng.com/img-png/thank-you-841.png) no-repeat;background-size:contain;background-position:center bottom;">
+		
+	</div>
+</div>
+			
+	</div>
+	<a href="http://localhost/Voice/register.html" title="" class="btn btn-white" style="margin-left:10%;">Logout</a>
+	
+
+	
+</section>
+
+
+
+</article>
+
+		</main>
+
+</body>
+</html>
